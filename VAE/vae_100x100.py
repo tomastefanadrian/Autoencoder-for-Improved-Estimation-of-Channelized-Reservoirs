@@ -6,7 +6,7 @@ Created on Tue Aug 25 23:14:40 2020
 """
 
 import numpy as np
-from tensorflow.keras.layers import Conv2D, MaxPooling2D,Conv2DTranspose, Input, Flatten, Dense, Lambda, Reshape
+from tensorflow.keras.layers import Conv2D, MaxPooling2D,Conv2DTranspose, Input, Flatten, Dense, Lambda, Reshape, Activation
 from tensorflow.keras.layers import BatchNormalization
 #from tensorflow.keras.layers import MaxPooling2D
 #from tensorflow.keras.layers import Activation
@@ -19,13 +19,14 @@ import matplotlib.pyplot as plt
 
 #load dataset
 #data=np.load("/home/stefan/image_correction/large_image_train/full_image_data.npz")
-data=np.load("small_image_train.npz")
-E1=data['arr_0']
-V1=data['arr_1']
-x_train=E1[0:,:,:,:]
-x_test=E1[11000:,:,:,:]
-y_train=V1[0:11000,:,:,:]
-y_test=V1[11000:,:,:,:]
+data=np.load("/home/stefan/image_correction/vaes/Data/full_image_data.npz")
+
+x_train=data['x_train']
+x_test=data['x_test']
+y_train=data['y_train']
+y_test=data['y_test']
+
+x_full=np.concatenate((x_train,x_test))
 
 fig=plt.figure(figsize=(8, 4))
 for i in range(0,4):
@@ -41,14 +42,14 @@ for i in range(5,9):
 
 plt.show()
 
-image_size=E1.shape[1]
+image_size=x_train.shape[1]
 input_shape = (image_size, image_size, 1)
 batch_size = 32
 #kernel_size = 3
 latent_dim = 100
 img_width, img_height = x_train.shape[1], x_train.shape[2]
-no_epochs = 20
-validation_split = 0.05
+no_epochs = 5
+validation_split = 0.2
 
 # Normalize data
 x_train = x_train / 255
@@ -60,13 +61,16 @@ x_test = x_test / 255
 
 # Definition
 i       = Input(shape=input_shape, name='encoder_input')
-cx      = Conv2D(filters=16, kernel_size=3, strides=2, padding='same', activation='relu')(i)
-cx      = Conv2D(filters=32, kernel_size=3, strides=2, padding='valid', activation='relu')(cx)
-cx      = Conv2D(filters=64, kernel_size=3, strides=1, padding='valid', activation='relu')(cx)
+cx      = Conv2D(filters=16, kernel_size=3, strides=1, padding='same', activation='relu')(i)
+cx      = MaxPooling2D(pool_size=(2,2),strides=None,padding='same')(cx)
+cx      = Conv2D(filters=32, kernel_size=3, strides=2, padding='same', activation='relu')(cx)
+cx      = Conv2D(filters=32, kernel_size=2, strides=1, padding='same', activation='relu')(cx)
+cx      = Conv2D(filters=64, kernel_size=2, strides=2, padding='same', activation='relu')(cx)
+cx      = MaxPooling2D(pool_size=(2,2),strides=None,padding='valid')(cx)
 x       = Flatten()(cx)
-x      =  Dense(3000, activation='relu')(x)
-x       = Dropout(.1)(x)
-x       = Dense(1024, activation='relu')(x)
+x       =  Dense(2000, activation='relu')(x)
+x       = BatchNormalization()(x)
+x       = Activation(activation='relu')(x)
 mu      = Dense(latent_dim, activation='linear', name='latent_mu')(x)
 sigma   = Dense(latent_dim, activation='linear', name='latent_sigma')(x)
 
@@ -95,15 +99,16 @@ encoder.summary()
 
 # Definition
 d_i   = Input(shape=(latent_dim, ), name='decoder_input')
-x     = Dense(1024, activation='relu')(d_i)
-x     = Dropout(.1)(x)
-x     = Dense(3000, activation='relu')(x)
-x     = Reshape((10,10,30))(x)
-cx    = Conv2DTranspose(filters=64, kernel_size=3, strides=1, padding='valid', activation='relu')(x)
-cx    = Conv2DTranspose(filters=32, kernel_size=3, strides=2, padding='valid', activation='relu')(cx)
-cx    = Conv2DTranspose(filters=16, kernel_size=3, strides=2, padding='same', activation='relu')(cx)
-#cx    = UpSampling2D((1,1),interpolation='bilinear')(cx)
-o    = Conv2D(filters=1, kernel_size=3, strides=1, padding='same', activation='sigmoid')(cx)
+x     = Dense(2000, activation='relu')(d_i)
+x     = BatchNormalization()(x)
+x     = Activation(activation='relu')(x)
+x     = Dense(20000, activation='relu')(x)
+x     = Reshape((25,25,32))(x)
+cx      = Conv2DTranspose(filters=64, kernel_size=2, strides=2, padding='same', activation='relu')(x)
+cx      = Conv2DTranspose(filters=32, kernel_size=2, strides=1, padding='same', activation='relu')(cx)
+cx      = Conv2DTranspose(filters=32, kernel_size=3, strides=2, padding='same', activation='relu')(cx)
+cx      = Conv2DTranspose(filters=16, kernel_size=3, strides=1, padding='same', activation='relu')(cx)
+o    = Conv2DTranspose(filters=1, kernel_size=3, strides=1, padding='same', activation='sigmoid')(cx)
 
 
 # Instantiate decoder
@@ -134,51 +139,51 @@ def kl_reconstruction_loss(true, pred):
 vae.compile(optimizer='adam', loss=kl_reconstruction_loss,experimental_run_tf_function=False)
 
 # Train autoencoder
-vae.fit(x_train, x_train, epochs = no_epochs, batch_size = batch_size, validation_split = validation_split)
+vae.fit(x_full, x_full, epochs = no_epochs, batch_size = batch_size, validation_split = validation_split)
 
 
 def viz_decoded(decoder):
-   fig, axs = plt.subplots(3, 3)
-   #num_samples = 9
-   mean = np.zeros((1, 100))
-   mean = np.reshape(mean, -1)
-   cov = np.identity(100)
-   num_channels = 1
-   for i in range(3):
-       for j in range(3):
-           decoderInput = np.random.default_rng().multivariate_normal(mean, cov)
-           decoderInput = decoderInput.reshape((1, 100))
-           #print(type(decoderInput))
-           #print(decoderInput.shape)
-           x_decoded = decoder.predict(decoderInput)
-           digit = x_decoded[0].reshape(img_width, img_height, num_channels)
-           genNumber = digit[:, :, 0]
-           axs[i, j].imshow(genNumber, cmap=plt.cm.gray)
+    fig, axs = plt.subplots(3, 3)
+    #num_samples = 9
+    mean = np.zeros((1, 100))
+    mean = np.reshape(mean, -1)
+    cov = np.identity(100)
+    num_channels = 1
+    for i in range(3):
+        for j in range(3):
+            decoderInput = np.random.default_rng().multivariate_normal(mean, cov)
+            decoderInput = decoderInput.reshape((1, 100))
+            #print(type(decoderInput))
+            #print(decoderInput.shape)
+            x_decoded = decoder.predict(decoderInput)
+            digit = x_decoded[0].reshape(img_width, img_height, num_channels)
+            genNumber = digit[:, :, 0]
+            axs[i, j].imshow(genNumber, cmap=plt.cm.gray)
 
 
 viz_decoded(decoder)
 
 
 
-# =================
-# Results visualization
-# Credits for original visualization code: https://keras.io/examples/variational_autoencoder_deconv/
-# (François Chollet).
-# Adapted to accomodate this VAE.
-# =================
+# # =================
+# # Results visualization
+# # Credits for original visualization code: https://keras.io/examples/variational_autoencoder_deconv/
+# # (François Chollet).
+# # Adapted to accomodate this VAE.
+# # =================
 
 
 
 
 
 
-# def viz_latent_space(encoder, data):
-#   input_data, target_data = data
-#   mu, _, _ = encoder.predict(input_data)
-#   plt.figure(figsize=(8, 10))
-#   plt.scatter(mu[:, 0], mu[:, 1], c=target_data)
-#   plt.xlabel('z - dim 1')
-#   plt.ylabel('z - dim 2')
-#   plt.colorbar()
-#   plt.show()
+# # def viz_latent_space(encoder, data):
+# #   input_data, target_data = data
+# #   mu, _, _ = encoder.predict(input_data)
+# #   plt.figure(figsize=(8, 10))
+# #   plt.scatter(mu[:, 0], mu[:, 1], c=target_data)
+# #   plt.xlabel('z - dim 1')
+# #   plt.ylabel('z - dim 2')
+# #   plt.colorbar()
+# #   plt.show()
   

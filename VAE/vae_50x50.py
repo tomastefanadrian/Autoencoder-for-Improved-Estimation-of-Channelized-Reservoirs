@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 #load dataset
 #data=np.load("/home/stefan/image_correction/large_image_train/full_image_data.npz")
-data=np.load("small_image_train.npz")
+data=np.load("/home/stefan/image_correction/vaes/Data/small_image_train.npz")
 E1=data['arr_0']
 V1=data['arr_1']
 x_train=E1[0:,:,:,:]
@@ -134,51 +134,51 @@ def kl_reconstruction_loss(true, pred):
 vae.compile(optimizer='adam', loss=kl_reconstruction_loss,experimental_run_tf_function=False)
 
 # Train autoencoder
-vae.fit(x_train, x_train, epochs = no_epochs, batch_size = batch_size, validation_split = validation_split)
+# vae.fit(x_train, x_train, epochs = no_epochs, batch_size = batch_size, validation_split = validation_split)
 
 
-def viz_decoded(decoder):
-   fig, axs = plt.subplots(3, 3)
-   #num_samples = 9
-   mean = np.zeros((1, 100))
-   mean = np.reshape(mean, -1)
-   cov = np.identity(100)
-   num_channels = 1
-   for i in range(3):
-       for j in range(3):
-           decoderInput = np.random.default_rng().multivariate_normal(mean, cov)
-           decoderInput = decoderInput.reshape((1, 100))
-           #print(type(decoderInput))
-           #print(decoderInput.shape)
-           x_decoded = decoder.predict(decoderInput)
-           digit = x_decoded[0].reshape(img_width, img_height, num_channels)
-           genNumber = digit[:, :, 0]
-           axs[i, j].imshow(genNumber, cmap=plt.cm.gray)
+# def viz_decoded(decoder):
+#    fig, axs = plt.subplots(3, 3)
+#    #num_samples = 9
+#    mean = np.zeros((1, 100))
+#    mean = np.reshape(mean, -1)
+#    cov = np.identity(100)
+#    num_channels = 1
+#    for i in range(3):
+#        for j in range(3):
+#            decoderInput = np.random.default_rng().multivariate_normal(mean, cov)
+#            decoderInput = decoderInput.reshape((1, 100))
+#            #print(type(decoderInput))
+#            #print(decoderInput.shape)
+#            x_decoded = decoder.predict(decoderInput)
+#            digit = x_decoded[0].reshape(img_width, img_height, num_channels)
+#            genNumber = digit[:, :, 0]
+#            axs[i, j].imshow(genNumber, cmap=plt.cm.gray)
 
 
-viz_decoded(decoder)
-
-
-
-# =================
-# Results visualization
-# Credits for original visualization code: https://keras.io/examples/variational_autoencoder_deconv/
-# (François Chollet).
-# Adapted to accomodate this VAE.
-# =================
+# viz_decoded(decoder)
 
 
 
+# # =================
+# # Results visualization
+# # Credits for original visualization code: https://keras.io/examples/variational_autoencoder_deconv/
+# # (François Chollet).
+# # Adapted to accomodate this VAE.
+# # =================
 
 
 
-# def viz_latent_space(encoder, data):
-#   input_data, target_data = data
-#   mu, _, _ = encoder.predict(input_data)
-#   plt.figure(figsize=(8, 10))
-#   plt.scatter(mu[:, 0], mu[:, 1], c=target_data)
-#   plt.xlabel('z - dim 1')
-#   plt.ylabel('z - dim 2')
-#   plt.colorbar()
-#   plt.show()
+
+
+
+# # def viz_latent_space(encoder, data):
+# #   input_data, target_data = data
+# #   mu, _, _ = encoder.predict(input_data)
+# #   plt.figure(figsize=(8, 10))
+# #   plt.scatter(mu[:, 0], mu[:, 1], c=target_data)
+# #   plt.xlabel('z - dim 1')
+# #   plt.ylabel('z - dim 2')
+# #   plt.colorbar()
+# #   plt.show()
   
