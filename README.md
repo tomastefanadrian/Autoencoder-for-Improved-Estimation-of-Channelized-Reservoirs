@@ -1,5 +1,10 @@
 # ChannelModels
-<<<<<<< HEAD
+
+This repository hold the implementation of the autoencoder used in "Bridging Deep Convolutional Autoencoders and Ensemble Smoothers for Improved Estimation of Channelized Reservoirs". 
+
+If you use this software (i.e., the autoencoder) please cite the following paper:
+
+Sebacher, B., Toma, S.A. Bridging Deep Convolutional Autoencoders and Ensemble Smoothers for Improved Estimation of Channelized Reservoirs. Math Geosci 54, 903–939 (2022). https://doi.org/10.1007/s11004-022-09997-7
 
 Folders:
 
@@ -13,4 +18,3 @@ All images have 2 types of rocks: background and channel; binary images (1 and 0
 For example, a training instance can be 50 x 50 x 1
 
 =======
->>>>>>> 6a977f7f147d8546f9a1a68922e0b00f9a7b0abb
