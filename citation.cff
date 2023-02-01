@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+ - family-names: "Sebacher"
+   given-names: "Bogdan"
+ - family-names: "Stefan-Adrian"
+   given-names: "Toma"
+title: "Bridging Deep Convolutional Autoencoders and Ensemble Smoothers for Improved Estimation of Channelized Reservoirs"
+version: 2.0.4
+doi: 10.5281/zenodo.1234
+date-released: 2017-12-18
+url: "https://github.com/github/linguist"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Sebacher"
+    given-names: "Bogdan"
+  - family-names: "Stefan-Adrian"
+    given-names: "Toma"
+  doi: "https://doi.org/10.1007/s11004-022-09997-7"
+  journal: "Mathematical Geosciences"
+  month: 07
+  start: 903 # First page number
+  end: 939 # Last page number
+  title: "Bridging Deep Convolutional Autoencoders and Ensemble Smoothers for Improved Estimation of Channelized Reservoirs"
+  issue: 5
+  volume: 54
+  year: 2022
