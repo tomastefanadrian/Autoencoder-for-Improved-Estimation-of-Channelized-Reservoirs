@@ -8,14 +8,14 @@ Sebacher, B., Toma, S.A. Bridging Deep Convolutional Autoencoders and Ensemble S
 
 Folders:
 
-Data - input data (training and testing) - not pushed to git, because the files are too large
-Models - NN models; not pushed, too large
+Data - input data (training and testing) - not pushed to git, because the files are too large  
+Models - NN models; not pushed, too large  
+  
+AE - autoencoders for 50 x 50 and 100 x 100 images  
+VAE - variational autoencoders for 50 x 50 and 100 x 100 images  
 
-VAE - variational autoencoders for 50 x 50 and 100 x 100 images
-AE - autoencoders for 50 x 50 and 100 x 100 images
-
-All images have 2 types of rocks: background and channel; binary images (1 and 0)
-For example, a training instance can be 50 x 50 x 1
+All images have 2 types of rocks: background and channel; binary images (1 and 0)  
+For example, a training instance can be 50 x 50 x 1  
 
 ![alt text](https://github.com/tomastefanadrian/Autoencoder-for-Improved-Estimation-of-Channelized-Reservoirs/blob/main/AE/examples.png)
 
