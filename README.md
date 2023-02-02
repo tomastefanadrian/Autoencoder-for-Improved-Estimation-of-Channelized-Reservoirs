@@ -1,6 +1,6 @@
-# ChannelModels
+# Autoencoder-for-Improved-Estimation-of-Channelized-Reservoirs
 
-This repository hold the implementation of the autoencoder used in "Bridging Deep Convolutional Autoencoders and Ensemble Smoothers for Improved Estimation of Channelized Reservoirs". 
+This repository hold the implementations of the autoencoders used in "Bridging Deep Convolutional Autoencoders and Ensemble Smoothers for Improved Estimation of Channelized Reservoirs". 
 
 If you use this software (i.e., the autoencoder) please cite the following paper:
 
@@ -16,5 +16,7 @@ AE - autoencoders for 50 x 50 and 100 x 100 images
 
 All images have 2 types of rocks: background and channel; binary images (1 and 0)
 For example, a training instance can be 50 x 50 x 1
+
+![alt text](https://github.com/tomastefanadrian/Autoencoder-for-Improved-Estimation-of-Channelized-Reservoirs/blob/main/AE/examples.png)
 
 =======
