@@ -6,6 +6,8 @@ If you use this software (i.e., the autoencoder) please cite the following paper
 
 Sebacher, B., Toma, S.A. Bridging Deep Convolutional Autoencoders and Ensemble Smoothers for Improved Estimation of Channelized Reservoirs. Math Geosci 54, 903–939 (2022). https://doi.org/10.1007/s11004-022-09997-7
 
+If you use the VAE please cite this repository.
+
 Folders:
 
 Data - input data (training and testing) - not pushed to git, because the files are too large  
